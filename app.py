@@ -36,21 +36,41 @@ if uploaded_file:
     
     st.divider()
     
-    # --- 3. THE CORE KPIS (Placeholders for now) ---
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Actual Spend", "Calculation Pending...")
-    col2.metric("Projected Run Rate", "Calculation Pending...")
-    col3.metric("Average Velocity", "Calculation Pending...")
+# --- 3. DYNAMIC AGGREGATION & KPIS ---
     
-    # --- 4. VISUALIZATIONS ---
+    # Map the radio button to a Pandas frequency string
+    freq_map = {"Daily": "D", "Weekly": "W-MON", "Monthly": "ME", "Yearly": "YE"}
+    selected_freq = freq_map[view_mode]
+    
+    # Aggregate data for the Burn Chart based on the selected timeframe
+    df_time = df.groupby(pd.Grouper(key='Date', freq=selected_freq))['Amount (Rp)'].sum().reset_index()
+    
+    # Calculate the math for the KPIs
+    total_spend = df['Amount (Rp)'].sum()
+    
+    # Determine the total span of days in the uploaded dataset to calculate accurate velocity
+    total_days = (df['Date'].max() - df['Date'].min()).days
+    total_days = total_days if total_days > 0 else 1 # Prevent division by zero if only 1 day is uploaded
+    
+    daily_velocity = total_spend / total_days
+    projected_yearly = daily_velocity * 365
+    period_average = df_time['Amount (Rp)'].mean()
+    
+    # Render the Core KPIs (Formatted with commas for readability)
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Actual Spend (Total)", f"Rp {total_spend:,.0f}")
+    col2.metric("Projected Yearly Run Rate", f"Rp {projected_yearly:,.0f}")
+    col3.metric(f"Average {view_mode} Velocity", f"Rp {period_average:,.0f}")
+    
+# --- 4. VISUALIZATIONS ---
     chart_col1, chart_col2 = st.columns([2, 1])
     
     with chart_col1:
         st.subheader(f"{view_mode} Burn Chart")
         
-        # Currently plotting raw daily dates. Aggregation logic to follow.
+        # Now plotting the dynamically aggregated df_time instead of raw df
         fig_burn = px.bar(
-            df, 
+            df_time, 
             x='Date', 
             y='Amount (Rp)', 
             labels={'Amount (Rp)': 'Total Spend (IDR)'}
@@ -62,7 +82,7 @@ if uploaded_file:
     with chart_col2:
         st.subheader("Allocation Breakdown")
         
-        # Groups data by Category for the donut chart
+        # Groups raw data by Category for the donut chart
         df_category = df.groupby('Category', as_index=False)['Amount (Rp)'].sum()
         
         fig_allocation = px.pie(
@@ -75,9 +95,7 @@ if uploaded_file:
         fig_allocation.update_layout(showlegend=False) # Hides legend to save space
         
         st.plotly_chart(fig_allocation, use_container_width=True)
-        
-    st.divider()
-    
+
     # --- 5. THE LEDGER ---
     st.subheader("Anomaly Ledger (Top 5 Transactions)")
     # Filters the top 5 largest expenses
