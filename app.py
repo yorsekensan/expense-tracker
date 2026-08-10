@@ -14,7 +14,7 @@ def ingest_tracker_data(file_buffer):
     # 3. Standardize the 'Date' column
     # Converts format like '1-Nov-2025' into a computable datetime object
     # Tells Pandas to auto-detect the date format, and converts unreadable text/blanks into null values instead of crashing
-    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+    df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
 
     # Drops any rows where the date was null (e.g., empty rows at the bottom of the CSV)
     df = df.dropna(subset=['Date'])
