@@ -130,7 +130,7 @@ if uploaded_file:
         st.plotly_chart(fig_allocation, use_container_width=True)
 
 # --- 5. THE LEDGER ---
-    st.subheader("Anomaly Ledger (Top 5 Transactions)")
+    st.subheader("Top 5 Spending")
     
     # Isolate the top 5 transactions
     top_5 = df.nlargest(5, 'Amount (Rp)')[['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']].copy()
