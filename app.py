@@ -22,6 +22,30 @@ def ingest_tracker_data(file_buffer):
     
     return df, []
 
+# --- PAGE CONFIGURATION ---
+st.set_page_config(layout="wide", page_title="Expense Summary")
+
+# Injecting CSS to fix metric truncation and hide UI when printing
+custom_css = """
+    <style>
+    /* Hide UI for PDF Print */
+    @media print {
+        header, .stFileUploader, .stDownloadButton, .stRadio {
+            display: none !important;
+        }
+    }
+    
+    /* Fix Metric Truncation on Mobile/Mac */
+    [data-testid="stMetricValue"] > div {
+        white-space: normal !important; 
+        word-wrap: break-word !important;
+        font-size: 28px !important; 
+        line-height: 1.2 !important;
+    }
+    </style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
+
 # --- 0. HOMEPAGE & INSTRUCTIONS ---
 st.title("📊 Household Financial Tracker")
 st.markdown("""
