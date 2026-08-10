@@ -13,7 +13,11 @@ def ingest_tracker_data(file_buffer):
     
     # 3. Standardize the 'Date' column
     # Converts format like '1-Nov-2025' into a computable datetime object
-    df['Date'] = pd.to_datetime(df['Date'], format='%d-%b-%Y')
+    # Tells Pandas to auto-detect the date format, and converts unreadable text/blanks into null values instead of crashing
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+
+    # Drops any rows where the date was null (e.g., empty rows at the bottom of the CSV)
+    df = df.dropna(subset=['Date'])
     
     # 4. Sort chronologically to ensure accurate time-series plotting
     df = df.sort_values(by='Date').reset_index(drop=True)
