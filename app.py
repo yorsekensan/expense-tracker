@@ -22,20 +22,16 @@ def ingest_tracker_data(file_buffer):
     
     return df, []
 
-# --- PAGE CONFIGURATION ---
+# --- PAGE CONFIGURATION & CSS ---
 st.set_page_config(layout="wide", page_title="Expense Summary")
 
-# Injecting CSS to fix metric truncation and hide UI when printing
 custom_css = """
     <style>
-    /* Hide UI for PDF Print */
     @media print {
         header, .stFileUploader, .stDownloadButton, .stRadio {
             display: none !important;
         }
     }
-    
-    /* Fix Metric Truncation on Mobile/Mac */
     [data-testid="stMetricValue"] > div {
         white-space: normal !important; 
         word-wrap: break-word !important;
@@ -46,66 +42,56 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# --- 0. HOMEPAGE & INSTRUCTIONS ---
 st.title("📊 Household Financial Tracker")
-st.markdown("""
-**Welcome to your private financial dashboard.** 
-This tool converts your raw daily expenses into a clear, single-page summary. 
 
-**Security First:** This app operates with strictly **Zero-Data Retention**. Your file is processed entirely in your browser's temporary memory. It is never saved to a database, and the data is completely destroyed the moment you close this tab.
-""")
-
-with st.expander("📖 Guide: How to use and edit the CSV template"):
-    st.markdown("""
-    **1. How to open the file:**
-    Even though it is a `.csv` (Comma Separated Values) file, you do not need special software. You can open it directly in **Microsoft Excel, Google Sheets, or Apple Numbers** just like a normal spreadsheet.
-    
-    **2. How to fill in the data:**
-    *   **Date:** Type your dates clearly (e.g., `1-Oct-2026`). 
-    *   **Category:** Group your spending into broad buckets (e.g., *Housing, Transport, Food, Utilities*). Using consistent categories creates the best pie charts.
-    *   **Amount (Rp):** Enter raw numbers only. Do not type "Rp" or add dots/commas (e.g., type `150000` instead of `Rp 150.000`). The app will format it for you.
-    *   **Notes & Others:** Use these for your own context, or leave them blank.
-    
-    **3. How to save your work:**
-    When you are done logging your expenses, go to `File > Save As` and ensure the file format remains **CSV (Comma delimited)**. Do not save it as a standard `.xlsx` Excel workbook, or the application will not be able to read it.
-    """)
-
-# The 3-Row Example Template
-template_csv = (
-    "Month,Date,Category,Item / Description,Amount (Rp),Notes,Split,Review\n"
-    "October 2026,1-Oct-2026,Utilities,Monthly Internet Bill,350000,Person A,Yes,Yes\n"
-    "October 2026,3-Oct-2026,Food & Lifestyle,Weekly Groceries,450000,Person B,Yes,Yes\n"
-    "October 2026,5-Oct-2026,Transport,Train Ticket,150000,Person A,No,Yes"
-)
-
-st.download_button(
-    label="📥 Download Starter Template (CSV)", 
-    data=template_csv, 
-    file_name="spending_tracker_template.csv", 
-    mime="text/csv"
-)
-
-st.divider()
-
-# --- 1. INGESTION ZONE ---
-st.markdown("### Upload Your Data")
-st.info("💡 **Pro Tip:** To share this dashboard with your household, adjust the time toggle to your preference, then press `Ctrl + P` (or `Cmd + P`) to save a clean, UI-free PDF.")
+# 1. We put the Uploader first so it remains on screen
 uploaded_file = st.file_uploader("Drop Daily Tracker (CSV)", type="csv")
 
-if uploaded_file:
-    # Pass the file through the gatekeeper
+# 2. Dynamic State Logic
+if not uploaded_file:
+    # --- NO FILE STATE: Show Instructions ---
+    st.markdown("""
+    **Welcome to your private financial dashboard.** 
+    This tool converts your raw daily expenses into a clear, single-page summary. 
+    
+    **Security First:** This app operates with strictly **Zero-Data Retention**. Your file is processed entirely in your browser's temporary memory and destroyed the moment you close this tab.
+    """)
+    
+    with st.expander("📖 Guide: How to use and edit the CSV template"):
+        st.markdown("""
+        **1. How to open the file:** You can open this directly in Excel, Google Sheets, or Apple Numbers.
+        **2. How to fill in the data:**
+        *   **Date:** Type dates clearly (e.g., `1-Oct-2026`). 
+        *   **Category:** Group spending into broad buckets (e.g., *Housing, Transport, Food*).
+        *   **Amount (Rp):** Enter raw numbers only (e.g., type `150000` instead of `Rp 150.000`).
+        **3. How to save your work:** Go to `File > Save As` and ensure the format remains **CSV (Comma delimited)**.
+        """)
+    
+    template_csv = (
+        "Month,Date,Category,Item / Description,Amount (Rp),Notes,Split,Review\n"
+        "October 2026,1-Oct-2026,Utilities,Monthly Internet Bill,350000,Person A,Yes,Yes\n"
+        "October 2026,3-Oct-2026,Food & Lifestyle,Weekly Groceries,450000,Person B,Yes,Yes\n"
+        "October 2026,5-Oct-2026,Transport,Train Ticket,150000,Person A,No,Yes"
+    )
+    
+    st.download_button(
+        label="📥 Download Starter Template (CSV)", 
+        data=template_csv, 
+        file_name="spending_tracker_template.csv", 
+        mime="text/csv"
+    )
+
+else:
+    # --- FILE UPLOADED STATE: Show Dashboard (Instructions vanish) ---
     df, missing_columns = ingest_tracker_data(uploaded_file)
     
     if missing_columns:
-        # Gracefully halt and warn the user
-        st.error(f"🚨 **Incorrect format detected.** Your file is missing the following required columns: `{', '.join(missing_columns)}`")
-        st.info("💡 **How to fix:** Please download the Starter Template above, ensure your column headers match exactly, and re-upload.")
+        st.error(f"🚨 **Incorrect format detected.** Missing columns: `{', '.join(missing_columns)}`")
+        st.info("💡 Please download the Starter Template, match the headers exactly, and re-upload.")
     else:
-        # --- 2. THE TIME CONTROL --- (Proceed with the dashboard as normal)
+        # Your Time Control and Dashboard rendering logic goes here
         view_mode = st.radio("Temporal View:", ["Daily", "Weekly", "Monthly", "Yearly"], horizontal=True)
-        
-        # ... (The rest of your dashboard code remains exactly the same below this line)
-    
+            
     st.divider()
     
 # --- 3. DYNAMIC AGGREGATION & KPIS ---
