@@ -24,11 +24,40 @@ def ingest_tracker_data(file_buffer):
     
     return df
 
-# --- PAGE CONFIGURATION ---
-st.set_page_config(layout="wide", page_title="Expense Summary")
-st.title("Household Financial Summary")
+# --- 0. HOMEPAGE & INSTRUCTIONS ---
+st.title("📊 Household Financial Tracker")
+st.markdown("""
+**Welcome to your private financial dashboard.** 
+This tool converts your raw daily expenses into a clear, single-page summary. 
+
+**Security First:** This app operates with strictly **Zero-Data Retention**. Your file is processed entirely in your browser's temporary memory. It is never saved to a database, and the data is completely destroyed the moment you close this tab.
+
+### How to use:
+1. **Download the starter template** below.
+2. **Log your expenses** using the exact column format.
+3. **Upload the file** to instantly generate your dynamic charts.
+""")
+
+# The 3-Row Example Template
+template_csv = (
+    "Month,Date,Category,Item / Description,Amount (Rp),Notes,Split,Review\n"
+    "October 2026,1-Oct-2026,Utilities,Monthly Internet Bill,350000,Person A,Yes,Yes\n"
+    "October 2026,3-Oct-2026,Food & Lifestyle,Weekly Groceries,450000,Person B,Yes,Yes\n"
+    "October 2026,5-Oct-2026,Transport,Train Ticket,150000,Person A,No,Yes"
+)
+
+st.download_button(
+    label="📥 Download Starter Template (CSV)", 
+    data=template_csv, 
+    file_name="spending_tracker_template.csv", 
+    mime="text/csv"
+)
+
+st.divider()
 
 # --- 1. INGESTION ZONE ---
+st.markdown("### Upload Your Data")
+st.info("💡 **Pro Tip:** To share this dashboard with your household, adjust the time toggle to your preference, then press `Ctrl + P` (or `Cmd + P`) to save a clean, UI-free PDF.")
 uploaded_file = st.file_uploader("Drop Daily Tracker (CSV)", type="csv")
 
 if uploaded_file:
