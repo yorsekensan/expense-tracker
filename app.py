@@ -3,26 +3,24 @@ import pandas as pd
 import plotly.express as px
 
 def ingest_tracker_data(file_buffer):
-    """Reads and cleans the raw daily tracker CSV."""
-    # 1. Read the CSV into a DataFrame
+    """Reads, validates, and cleans the raw daily tracker CSV."""
     df = pd.read_csv(file_buffer)
     
-    # 2. Clean the 'Amount (Rp)' column
-    # Strip 'Rp', remove commas, and convert to numeric (float)
+    # 1. The Validation Gatekeeper
+    required_cols = ['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    
+    if missing_cols:
+        # Returns empty data and a list of the missing columns
+        return None, missing_cols
+        
+    # 2. Clean the Data (Only executes if validation passes)
     df['Amount (Rp)'] = df['Amount (Rp)'].astype(str).str.replace(r'[Rp,]', '', regex=True).astype(float)
-    
-    # 3. Standardize the 'Date' column
-    # Converts format like '1-Nov-2025' into a computable datetime object
-    # Tells Pandas to auto-detect the date format, and converts unreadable text/blanks into null values instead of crashing
     df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
-
-    # Drops any rows where the date was null (e.g., empty rows at the bottom of the CSV)
     df = df.dropna(subset=['Date'])
-    
-    # 4. Sort chronologically to ensure accurate time-series plotting
     df = df.sort_values(by='Date').reset_index(drop=True)
     
-    return df
+    return df, []
 
 # --- 0. HOMEPAGE & INSTRUCTIONS ---
 st.title("📊 Household Financial Tracker")
@@ -61,11 +59,18 @@ st.info("💡 **Pro Tip:** To share this dashboard with your household, adjust t
 uploaded_file = st.file_uploader("Drop Daily Tracker (CSV)", type="csv")
 
 if uploaded_file:
-    # Read and clean data in memory
-    df = ingest_tracker_data(uploaded_file)
+    # Pass the file through the gatekeeper
+    df, missing_columns = ingest_tracker_data(uploaded_file)
     
-    # --- 2. THE TIME CONTROL ---
-    view_mode = st.radio("Temporal View:", ["Daily", "Weekly", "Monthly", "Yearly"], horizontal=True)
+    if missing_columns:
+        # Gracefully halt and warn the user
+        st.error(f"🚨 **Incorrect format detected.** Your file is missing the following required columns: `{', '.join(missing_columns)}`")
+        st.info("💡 **How to fix:** Please download the Starter Template above, ensure your column headers match exactly, and re-upload.")
+    else:
+        # --- 2. THE TIME CONTROL --- (Proceed with the dashboard as normal)
+        view_mode = st.radio("Temporal View:", ["Daily", "Weekly", "Monthly", "Yearly"], horizontal=True)
+        
+        # ... (The rest of your dashboard code remains exactly the same below this line)
     
     st.divider()
     
