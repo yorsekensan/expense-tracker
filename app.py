@@ -53,12 +53,22 @@ st.markdown("""
 This tool converts your raw daily expenses into a clear, single-page summary. 
 
 **Security First:** This app operates with strictly **Zero-Data Retention**. Your file is processed entirely in your browser's temporary memory. It is never saved to a database, and the data is completely destroyed the moment you close this tab.
-
-### How to use:
-1. **Download the starter template** below.
-2. **Log your expenses** using the exact column format.
-3. **Upload the file** to instantly generate your dynamic charts.
 """)
+
+with st.expander("📖 Guide: How to use and edit the CSV template"):
+    st.markdown("""
+    **1. How to open the file:**
+    Even though it is a `.csv` (Comma Separated Values) file, you do not need special software. You can open it directly in **Microsoft Excel, Google Sheets, or Apple Numbers** just like a normal spreadsheet.
+    
+    **2. How to fill in the data:**
+    *   **Date:** Type your dates clearly (e.g., `1-Oct-2026`). 
+    *   **Category:** Group your spending into broad buckets (e.g., *Housing, Transport, Food, Utilities*). Using consistent categories creates the best pie charts.
+    *   **Amount (Rp):** Enter raw numbers only. Do not type "Rp" or add dots/commas (e.g., type `150000` instead of `Rp 150.000`). The app will format it for you.
+    *   **Notes & Others:** Use these for your own context, or leave them blank.
+    
+    **3. How to save your work:**
+    When you are done logging your expenses, go to `File > Save As` and ensure the file format remains **CSV (Comma delimited)**. Do not save it as a standard `.xlsx` Excel workbook, or the application will not be able to read it.
+    """)
 
 # The 3-Row Example Template
 template_csv = (
