@@ -100,7 +100,17 @@ if uploaded_file:
         
         st.plotly_chart(fig_allocation, use_container_width=True)
 
-    # --- 5. THE LEDGER ---
+# --- 5. THE LEDGER ---
     st.subheader("Anomaly Ledger (Top 5 Transactions)")
-    # Filters the top 5 largest expenses
-    st.dataframe(df.nlargest(5, 'Amount (Rp)')[['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']])
+    
+    # Isolate the top 5 transactions
+    top_5 = df.nlargest(5, 'Amount (Rp)')[['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']].copy()
+    
+    # Format Date to DD-MM-YYYY (strips the time)
+    top_5['Date'] = top_5['Date'].dt.strftime('%d-%m-%Y')
+    
+    # Format Amount with thousands separators
+    top_5['Amount (Rp)'] = top_5['Amount (Rp)'].apply(lambda x: f"{x:,.0f}")
+    
+    # Render table and explicitly hide the index row numbers
+    st.dataframe(top_5, hide_index=True)
