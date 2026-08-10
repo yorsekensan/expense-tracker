@@ -43,7 +43,7 @@ if uploaded_file:
 # --- 3. DYNAMIC AGGREGATION & KPIS ---
     
     # Map the radio button to a Pandas frequency string
-    freq_map = {"Daily": "D", "Weekly": "W-MON", "Monthly": "ME", "Yearly": "YE"}
+    freq_map = {"Daily": "D", "Weekly": "W-MON", "Monthly": "MS", "Yearly": "YS"}
     selected_freq = freq_map[view_mode]
     
     # Aggregate data for the Burn Chart based on the selected timeframe
