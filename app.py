@@ -269,7 +269,7 @@ if st.button("Generate AI Financial Audit"):
         except Exception as e:
             st.error("🚨 Execution Error.")
             st.write(e)
-
+            
 st.divider()
     
     # --- 7. MONETIZATION / SUPPORT ---
