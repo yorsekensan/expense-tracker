@@ -193,7 +193,7 @@ if st.button("Generate AI Financial Audit"):
             try:
                 # 1. Authenticate using Streamlit Secrets
                 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-1.5-flash-latest')
                 
                 # 2. Data Aggregation (Creating the lightweight payload)
                 total_spend = df['Amount (Rp)'].sum()
