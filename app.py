@@ -242,9 +242,12 @@ if st.button("Generate AI Financial Audit"):
                     st.error(f"🚨 HTTP Error {raw_response.status_code}")
                     st.code(raw_response.text) 
                     
-            except Exception as e:
-                st.error("🚨 Execution Error.")
-                st.info(f"Technical details: {e}")
+            except NameError:
+                st.error("🚨 Data Not Found.")
+                st.info("Please ensure your CSV file is fully uploaded and the financial charts are visible before generating an audit.")
+            except Exception:
+                st.error("🚨 Connection Interrupted.")
+                st.info("The AI servers are currently busy or unavailable. Please try clicking generate again in a few moments.")
                 
 # --- TEMPORARY DEBUG BUTTON ---
     if st.button("Debug: List Allowed Models"):
