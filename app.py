@@ -194,7 +194,7 @@ if st.button("Generate AI Financial Audit"):
             try:
                 # 1. Fetch API Key and Set REST Endpoint
                 api_key = st.secrets["GEMINI_API_KEY"]
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
                 
                 # 2. Data Aggregation 
                 total_spend = df['Amount (Rp)'].sum()
