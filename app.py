@@ -191,20 +191,19 @@ if st.button("Generate AI Financial Audit"):
     else:
         with st.spinner("Analyzing your metrics and generating audit..."):
             try:
-                # 1. Authenticate using Streamlit Secrets
-                genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-                model = genai.GenerativeModel('gemini-pro')
+                # 1. Fetch API Key and Set REST Endpoint
+                api_key = st.secrets["GEMINI_API_KEY"]
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
                 
-                # 2. Data Aggregation (Creating the lightweight payload)
+                # 2. Data Aggregation 
                 total_spend = df['Amount (Rp)'].sum()
                 category_totals = df.groupby('Category')['Amount (Rp)'].sum().to_dict()
                 
-                # Ensure datetime is formatted as a string before converting to dict
                 top_5_df = df.nlargest(5, 'Amount (Rp)')[['Date', 'Item / Description', 'Amount (Rp)']].copy()
                 top_5_df['Date'] = top_5_df['Date'].dt.strftime('%Y-%m-%d')
                 top_5 = top_5_df.to_dict('records')
                 
-                # 3. Prompt Engineering (The Rules of Engagement)
+                # 3. The Prompt 
                 prompt = f"""
                 You are an expert financial analyst and advisor. Review this anonymized spending data and the user's specific financial goal.
                 
@@ -217,25 +216,31 @@ if st.button("Generate AI Financial Audit"):
                 
                 Format your response exactly with these markdown headers:
                 ### Executive Summary
-                (One paragraph summarizing the overall health of their cash flow)
                 ### Trend Analysis
-                (Insights on their burn velocity and category weight)
                 ### Category Audit
-                (Specific warnings or optimizations on their allocations)
                 ### Anomaly Warning
-                (Flags on any massive individual transactions from the Top 5 list)
                 ### Goal Alignment
-                (Direct, tactical advice on how to route capital to achieve their specific stated intent)
                 
                 Maintain a direct, structured, and risk-aware tone. Provide highly actionable advice.
                 """
                 
-                # 4. Execute the API Call
-                response = model.generate_content(prompt)
+                # 4. Execute Raw HTTP POST Request
+                headers = {'Content-Type': 'application/json'}
+                payload = {
+                    "contents": [{"parts": [{"text": prompt}]}]
+                }
                 
-                # 5. Render the Output
-                st.markdown(response.text)
+                raw_response = requests.post(url, headers=headers, json=payload)
                 
+                # 5. Parse and Render
+                if raw_response.status_code == 200:
+                    result = raw_response.json()
+                    advice = result["candidates"][0]["content"]["parts"][0]["text"]
+                    st.markdown(advice)
+                else:
+                    st.error(f"🚨 HTTP Error {raw_response.status_code}")
+                    st.code(raw_response.text) # Displays the exact Google server error
+                    
             except Exception as e:
-                st.error("🚨 Connection Error or Missing API Key.")
+                st.error("🚨 Execution Error.")
                 st.info(f"Technical details: {e}")
