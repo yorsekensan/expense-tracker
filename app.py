@@ -194,7 +194,7 @@ if st.button("Generate AI Financial Audit"):
             try:
                 # 1. Fetch API Key and Set REST Endpoint
                 api_key = st.secrets["GEMINI_API_KEY"]
-                url = f"https://generativelanguage.googleapis.com/v1beta/interactions:generateContent?key={api_key}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
                 
                 # 2. Data Aggregation 
                 total_spend = df['Amount (Rp)'].sum()
@@ -228,9 +228,9 @@ if st.button("Generate AI Financial Audit"):
                 # 4. Execute Raw HTTP POST Request
                 headers = {'Content-Type': 'application/json'}
                 payload = {
-                    "model": "models/gemini-3.0-flash",
                     "contents": [{"parts": [{"text": prompt}]}]
-                }                
+                }
+                
                 raw_response = requests.post(url, headers=headers, json=payload)
                 
                 # 5. Parse and Render
@@ -240,12 +240,12 @@ if st.button("Generate AI Financial Audit"):
                     st.markdown(advice)
                 else:
                     st.error(f"🚨 HTTP Error {raw_response.status_code}")
-                    st.code(raw_response.text) # Displays the exact Google server error
+                    st.code(raw_response.text) 
                     
             except Exception as e:
                 st.error("🚨 Execution Error.")
                 st.info(f"Technical details: {e}")
-
+                
 # --- TEMPORARY DEBUG BUTTON ---
     if st.button("Debug: List Allowed Models"):
         try:
