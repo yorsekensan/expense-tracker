@@ -269,28 +269,28 @@ if st.button("Generate AI Financial Audit"):
         except Exception as e:
             st.error("🚨 Execution Error.")
             st.write(e)
-            
+
 st.divider()
 
 # --- 7. MONETIZATION / SUPPORT ---
-st.header("🤝 Support the Developer")
-st.caption("This tool is built with a Zero-Data Retention architecture to keep your finances strictly private. If it helped you optimize your cash flow, consider keeping the servers running!")
-
-# Create two columns for a clean UI
-col1, col2, col3 = st.columns([1, 1, 2])
-
-with col1:
-    # Replace the URL with your actual Saweria, Trakteer, or BuyMeACoffee link
-    st.link_button(
-        "☕ Buy me a Fore Coffee", 
-        "https://saweria.co/your_username_here", 
-        use_container_width=True
+with st.container(border=True):
+    # Centered text matching the visual style of your reference
+    st.markdown(
+        "<p style='text-align: center; font-style: italic; color: #a1a1aa; margin-bottom: 15px;'>"
+        "💡 YS Financial Tracker is provided free as a zero-data retention project. "
+        "If this tool helps optimize your cash flow, consider supporting the servers:"
+        "</p>", 
+        unsafe_allow_html=True
     )
     
-with col2:
-    # Replace the URL with a link to a page showing your BTC address, or a crypto payment gateway
-    st.link_button(
-        "₿ Support in BTC", 
-        "https://your_crypto_payment_link_here", 
-        use_container_width=True
-    )            
+    # Using a 3-column layout to perfectly center the single button
+    col1, col2, col3 = st.columns([1, 1, 1])
+    
+    with col2:
+        # Setting type="primary" gives the button a solid fill color
+        st.link_button(
+            "☕ Support / Donate", 
+            "https://saweria.co/your_username_here", 
+            use_container_width=True,
+            type="primary"
+        )
