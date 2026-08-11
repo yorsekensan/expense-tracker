@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import google.generativeai as genai
+import requests
+import json
 
 def ingest_tracker_data(file_buffer):
     """Reads, validates, and cleans the raw daily tracker CSV."""
