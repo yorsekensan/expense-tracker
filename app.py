@@ -271,26 +271,26 @@ if st.button("Generate AI Financial Audit"):
             st.write(e)
             
 st.divider()
+
+# --- 7. MONETIZATION / SUPPORT ---
+st.header("🤝 Support the Developer")
+st.caption("This tool is built with a Zero-Data Retention architecture to keep your finances strictly private. If it helped you optimize your cash flow, consider keeping the servers running!")
+
+# Create two columns for a clean UI
+col1, col2, col3 = st.columns([1, 1, 2])
+
+with col1:
+    # Replace the URL with your actual Saweria, Trakteer, or BuyMeACoffee link
+    st.link_button(
+        "☕ Buy me a Fore Coffee", 
+        "https://saweria.co/your_username_here", 
+        use_container_width=True
+    )
     
-    # --- 7. MONETIZATION / SUPPORT ---
-    st.header("🤝 Support the Developer")
-    st.caption("This tool is built with a Zero-Data Retention architecture to keep your finances strictly private. If it helped you optimize your cash flow, consider keeping the servers running!")
-    
-    # Create two columns for a clean UI
-    col1, col2, col3 = st.columns([1, 1, 2])
-    
-    with col1:
-        # Replace the URL with your actual Saweria, Trakteer, or BuyMeACoffee link
-        st.link_button(
-            "☕ Buy me a Fore Coffee", 
-            "https://saweria.co/your_username_here", 
-            use_container_width=True
-        )
-        
-    with col2:
-        # Replace the URL with a link to a page showing your BTC address, or a crypto payment gateway
-        st.link_button(
-            "₿ Support in BTC", 
-            "https://your_crypto_payment_link_here", 
-            use_container_width=True
-        )
+with col2:
+    # Replace the URL with a link to a page showing your BTC address, or a crypto payment gateway
+    st.link_button(
+        "₿ Support in BTC", 
+        "https://your_crypto_payment_link_here", 
+        use_container_width=True
+    )            
