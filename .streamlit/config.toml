@@ -1,2 +1,9 @@
 [server]
 maxUploadSize = 5
+
+[theme]
+# Forces the app into dark mode to match the reference UI
+base = "dark"
+
+# Sets the primary button color to a warm, golden yellow
+primaryColor = "#F39C12"
