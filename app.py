@@ -168,3 +168,26 @@ else:
     
     # Render table and explicitly hide the index row numbers
     st.dataframe(top_5, hide_index=True)
+    
+st.divider()
+    
+    # --- 6. AI FINANCIAL ADVISOR ---
+    st.header("🤖 AI Financial Advisor")
+    
+    # Security Disclaimer
+    st.caption("🔒 **Security Note:** Your raw transaction data is NEVER sent to the AI. We only send high-level, anonymized math (e.g., 'Total Food Spend: Rp 5.000.000') to generate your advice, ensuring complete privacy.")
+    
+    # Capturing User Intent
+    user_goal = st.text_input(
+        "What is your primary financial goal or spending limit right now?", 
+        placeholder="e.g., Keep total monthly spend under 15M, or cut down on dining out to save more."
+    )
+    
+    # The Trigger Button
+    if st.button("Generate AI Financial Audit"):
+        if not user_goal:
+            st.warning("Please enter a financial goal above so the AI can tailor its advice to your intentions.")
+        else:
+            with st.spinner("Analyzing your metrics and generating audit..."):
+                # (We will insert the Gemini API Python code here in the next step)
+                st.success("API Integration Ready to be Built!")
