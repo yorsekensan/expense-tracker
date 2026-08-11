@@ -245,3 +245,27 @@ if st.button("Generate AI Financial Audit"):
             except Exception as e:
                 st.error("🚨 Execution Error.")
                 st.info(f"Technical details: {e}")
+
+# --- TEMPORARY DEBUG BUTTON ---
+    if st.button("Debug: List Allowed Models"):
+        try:
+            api_key = st.secrets["GEMINI_API_KEY"]
+            # Calling the ListModels endpoint
+            debug_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+            response = requests.get(debug_url)
+            
+            if response.status_code == 200:
+                models_data = response.json()
+                # Filtering to only show models that support text generation
+                supported_models = [
+                    m['name'] for m in models_data.get('models', []) 
+                    if 'generateContent' in m.get('supportedGenerationMethods', [])
+                ]
+                st.success("✅ Connection Successful! Your key can access these models:")
+                st.write(supported_models)
+            else:
+                st.error(f"🚨 Debug Error: {response.status_code}")
+                st.write(response.text)
+        except Exception as e:
+            st.error("🚨 Execution Error.")
+            st.write(e)
