@@ -1,4 +1,5 @@
 import streamlit as st
+import io
 import pandas as pd
 import plotly.express as px
 import requests
@@ -6,7 +7,7 @@ import json
 
 def ingest_tracker_data(file_buffer):
     """Reads, validates, and cleans the raw daily tracker CSV."""
-    df = pd.read_csv(file_buffer)
+    df = pd.read_excel(file)
     
     # 1. The Validation Gatekeeper
     required_cols = ['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']
@@ -47,7 +48,7 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.title("📊 Household Financial Tracker")
 
 # 1. We put the Uploader first so it remains on screen
-uploaded_file = st.file_uploader("Drop Daily Tracker (CSV)", type="csv")
+uploaded_file = st.file_uploader("Drop Daily Tracker (Excel)", type=["xlsx"])
 
 # 2. Dynamic State Logic
 if not uploaded_file:
@@ -69,18 +70,30 @@ if not uploaded_file:
         **3. How to save your work:** Go to `File > Save As` and ensure the format remains **CSV (Comma delimited)**.
         """)
     
-    template_csv = (
-        "Month,Date,Category,Item / Description,Amount (Rp),Notes,Split,Review\n"
-        "October 2026,1-Oct-2026,Utilities,Monthly Internet Bill,350000,Person A,Yes,Yes\n"
-        "October 2026,3-Oct-2026,Food & Lifestyle,Weekly Groceries,450000,Person B,Yes,Yes\n"
-        "October 2026,5-Oct-2026,Transport,Train Ticket,150000,Person A,No,Yes"
-    )
+    # 1. Define the Template Data
+    template_data = {
+        "Month": ["October 2026", "October 2026", "October 2026"],
+        "Date": ["1-Oct-2026", "3-Oct-2026", "5-Oct-2026"],
+        "Category": ["Utilities", "Food & Lifestyle", "Transport"],
+        "Item / Description": ["Monthly Internet Bill", "Weekly Groceries", "Train Ticket"],
+        "Amount (Rp)": [350000, 450000, 150000],
+        "Notes": ["Person A", "Person B", "Person A"],
+        "Split": ["Yes", "Yes", "No"],
+        "Review": ["Yes", "Yes", "Yes"]
+    }
+    df_template = pd.DataFrame(template_data)
     
+    # 2. Write to a virtual Excel file in memory
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df_template.to_excel(writer, index=False, sheet_name='Tracker')
+    
+    # 3. Create the Download Button
     st.download_button(
-        label="📥 Download Starter Template (CSV)", 
-        data=template_csv, 
-        file_name="spending_tracker_template.csv", 
-        mime="text/csv"
+        label="📥 Download Starter Template (Excel)", 
+        data=buffer.getvalue(), 
+        file_name="spending_tracker_template.xlsx", 
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
 else:
