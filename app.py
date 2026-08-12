@@ -1,8 +1,8 @@
 import streamlit as st
-import io
 import pandas as pd
-import plotly.express as px
+import io
 import requests
+import plotly.express as px
 import json
 
 def ingest_tracker_data(file_buffer):
