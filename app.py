@@ -6,8 +6,8 @@ import plotly.express as px
 import json
 
 def ingest_tracker_data(file_buffer):
-    """Reads, validates, and cleans the raw daily tracker CSV."""
-    df = pd.read_excel(file)
+    """Reads, validates, and cleans the raw daily tracker XLSX."""
+    df = pd.read_excel(uploaded_file)
     
     # 1. The Validation Gatekeeper
     required_cols = ['Date', 'Category', 'Item / Description', 'Amount (Rp)', 'Notes']
